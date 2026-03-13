@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evan Heil — Das Heilhaus</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void:    #07090d;
+    --base:    #0a0c10;
+    --surface: #0f1318;
+    --panel:   #141820;
+    --raise:   #1a202c;
+
+    --blue:        #4a7fa5;
+    --blue-bright: #6ba3cc;
+    --blue-dim:    #2d5570;
+    --blue-glow:   rgba(74,127,165,0.15);
+
+    --gold:        #c9a84c;
+    --gold-bright: #e2c270;
+    --gold-dim:    #8a6e30;
+    --gold-glow:   rgba(201,168,76,0.12);
+
+    --silver:  #8a9bb0;
+    --muted:   #6a7a8f;
+    --ghost:   #2a3040;
+
+    --text:    #e8edf2;
+    --text-2:  #aabccc;
+    --text-3:  #7a8fa3;
+
+    --line:        rgba(74,127,165,0.12);
+    --line-bright: rgba(74,127,165,0.25);
+
+    --aptos: 'Aptos', 'Aptos Display', Calibri, 'Gill Sans', 'Gill Sans MT', system-ui, sans-serif;
+    --mono:  'Aptos Mono', 'Cascadia Mono', Consolas, monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--base);
+    color: var(--text);
+    font-family: var(--aptos);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-mark {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .nav-mark span { color: var(--gold); }
+
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--blue-bright); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 4rem 6rem 6rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--blue);
+    box-shadow: 0 0 8px var(--blue);
+  }
+
+  h1 {
+    font-family: var(--aptos);
+    font-size: clamp(4rem, 7vw, 7.5rem);
+    font-weight: 200;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--text-2);
+    max-width: 38ch;
+    margin-bottom: 3rem;
+    font-weight: 400;
+  }
+
+  .cta-row { display: flex; gap: 1.5rem; align-items: center; }
+
+  .btn-primary {
+    background: transparent;
+    color: var(--gold);
+    padding: 0.8rem 2.2rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+    border: 1px solid var(--gold-dim);
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-glow);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px var(--gold-glow);
+  }
+
+  .btn-ghost {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: color 0.2s;
+  }
+
+  .btn-ghost::after { content: '→'; }
+  .btn-ghost:hover { color: var(--blue-bright); }
+
+  /* hero right panel */
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border-left: 1px solid var(--line);
+  }
+
+  /* circuit-board grid */
+  .hero-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(74,127,165,0.07) 39px, rgba(74,127,165,0.07) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(74,127,165,0.07) 39px, rgba(74,127,165,0.07) 40px);
+  }
+
+  /* diagonal accent line */
+  .hero-right::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 30%;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--blue-dim), transparent);
+    transform: skewX(-15deg);
+  }
+
+  .hero-monogram {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--aptos);
+    font-size: 22rem;
+    font-weight: 100;
+    color: rgba(74,127,165,0.05);
+    line-height: 1;
+    user-select: none;
+    letter-spacing: -0.05em;
+  }
+
+  .hero-badge {
+    position: absolute;
+    bottom: 3rem; right: 3rem;
+    width: 120px; height: 120px;
+    border: 1px solid var(--blue-dim);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.3rem;
+    box-shadow: 0 0 30px rgba(74,127,165,0.1), inset 0 0 30px rgba(74,127,165,0.03);
+  }
+
+  .hero-badge-init {
+    font-family: var(--aptos);
+    font-size: 1.8rem;
+    font-weight: 200;
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-badge-label {
+    font-family: var(--mono);
+    font-size: 0.48rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* corner brackets on hero-right */
+  .bracket { position: absolute; width: 20px; height: 20px; }
+  .bracket-tl { top: 2rem; left: 2rem; border-top: 1px solid var(--blue-dim); border-left: 1px solid var(--blue-dim); }
+  .bracket-tr { top: 2rem; right: 2rem; border-top: 1px solid var(--blue-dim); border-right: 1px solid var(--blue-dim); }
+  .bracket-bl { bottom: 2rem; left: 2rem; border-bottom: 1px solid var(--blue-dim); border-left: 1px solid var(--blue-dim); }
+  .bracket-br { bottom: 2rem; right: 2rem; border-bottom: 1px solid var(--blue-dim); border-right: 1px solid var(--blue-dim); }
+
+  /* ── SHARED ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--line-bright), transparent);
+    margin: 0;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 1.5rem;
+    height: 1px;
+    background: var(--blue);
+    box-shadow: 0 0 6px var(--blue);
+  }
+
+  h2 {
+    font-family: var(--aptos);
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    font-weight: 200;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  h2 em { font-style: italic; color: var(--gold); font-weight: 300; }
+
+  /* ── ABOUT ── */
+  .about {
+    padding: 8rem 6rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+    background: var(--base);
+  }
+
+  .about-text p {
+    font-size: 0.95rem;
+    line-height: 1.95;
+    color: var(--text-2);
+    margin-bottom: 1.1rem;
+    font-weight: 400;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    border-top: 1px solid var(--line);
+    padding-top: 2.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .stat-num {
+    font-family: var(--aptos);
+    font-size: 3rem;
+    font-weight: 200;
+    line-height: 1;
+    color: var(--gold);
+    letter-spacing: -0.03em;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-top: 0.4rem;
+  }
+
+  .projects-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--line);
+    padding-top: 2.5rem;
+  }
+
+  .project-card {
+    padding: 1.6rem 1.8rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--blue);
+    box-shadow: 0 0 8px var(--blue);
+  }
+
+  .project-card:hover {
+    border-color: var(--line-bright);
+    box-shadow: 0 0 20px var(--blue-glow);
+  }
+
+  .project-card-title {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    margin-bottom: 0.8rem;
+  }
+
+  .project-card p {
+    font-size: 0.83rem;
+    line-height: 1.8;
+    color: var(--text-2);
+    font-weight: 400;
+  }
+
+  /* ── EXPERTISE ── */
+  .work {
+    padding: 6rem;
+    background: var(--surface);
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: 4rem;
+    border: 1px solid var(--line);
+  }
+
+  .work-card {
+    background: var(--panel);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .work-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--gold);
+    box-shadow: 0 0 12px var(--gold-glow);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .work-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(to top, var(--gold-glow), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .work-card:hover { background: var(--raise); }
+  .work-card:hover::before { transform: scaleX(1); }
+  .work-card:hover::after { opacity: 1; }
+
+  .work-card-num {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  .work-card h3 {
+    font-family: var(--aptos);
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .work-card p {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    color: var(--text-2);
+    font-weight: 400;
+  }
+
+  .work-card-tags { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.65rem;
+    border: 1px solid var(--blue-dim);
+    color: var(--blue);
+    background: var(--blue-glow);
+  }
+
+  /* ── SKILLS ── */
+  .skills {
+    padding: 8rem 6rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+    background: var(--base);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+
+  .skill-group-title {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .skill-list li {
+    font-size: 0.83rem;
+    color: var(--text-2);
+    font-weight: 400;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .skill-list li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--blue);
+    font-weight: 300;
+  }
+
+  /* ── CAREER ── */
+  .career {
+    padding: 8rem 6rem;
+    background: var(--surface);
+  }
+
+  .timeline {
+    margin-top: 4rem;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--blue), var(--blue-dim), transparent);
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 3rem;
+    padding-bottom: 3.5rem;
+    position: relative;
+  }
+
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0.5rem;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 10px var(--gold);
+  }
+
+  .timeline-meta { padding-left: 2rem; }
+
+  .timeline-period {
+    font-family: var(--mono);
+    font-size: 0.57rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-company {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    font-weight: 400;
+  }
+
+  .timeline-role {
+    font-family: var(--aptos);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.01em;
+  }
+
+  .timeline-desc {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    color: var(--text-2);
+    font-weight: 400;
+  }
+
+  /* ── EDUCATION ── */
+  .education {
+    padding: 8rem 6rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+    background: var(--base);
+  }
+
+  .edu-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .edu-card {
+    padding: 1.8rem 2rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .edu-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+
+  .edu-card:hover { border-color: var(--line-bright); }
+
+  .edu-card-type {
+    font-family: var(--mono);
+    font-size: 0.54rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .edu-card-title {
+    font-family: var(--aptos);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.01em;
+  }
+
+  .edu-card-detail {
+    font-size: 0.82rem;
+    color: var(--text-2);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .edu-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.65rem;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    text-decoration: none;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .edu-card-link:hover {
+    background: var(--gold-glow);
+    box-shadow: 0 0 12px var(--gold-glow);
+  }
+
+  .cert-courses {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .cert-course {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .cert-course-name {
+    font-size: 0.8rem;
+    color: var(--text-2);
+    font-weight: 400;
+  }
+
+  .cert-course-verify {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  .cert-course-verify:hover { color: var(--blue-bright); text-decoration: underline; }
+
+  /* ── INTERESTS ── */
+  .interests {
+    padding: 6rem;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .interests::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74,127,165,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .interests-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+  }
+
+  .interest-item {
+    padding: 2rem;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .interest-item:hover {
+    border-color: var(--line-bright);
+    background: var(--raise);
+  }
+
+  .interest-item h4 {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    margin-bottom: 1rem;
+  }
+
+  .interest-item p {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    color: var(--text-2);
+    font-weight: 400;
+  }
+
+  /* ── CONTACT ── */
+  .contact {
+    padding: 8rem 6rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+    background: var(--base);
+  }
+
+  .contact-text p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--text-2);
+    font-weight: 400;
+    margin-bottom: 1rem;
+  }
+
+  .contact-details { display: flex; flex-direction: column; gap: 2rem; }
+
+  .contact-item-label {
+    font-family: var(--mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.4rem;
+  }
+
+  .contact-item-value {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .contact-item-value a {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 1px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .contact-item-value a:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 2.5rem 6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--void);
+  }
+
+  .footer-mark {
+    font-family: var(--aptos);
+    font-size: 1.2rem;
+    font-weight: 200;
+    letter-spacing: 0.04em;
+    color: var(--text-2);
+  }
+
+  .footer-mark span { color: var(--gold); font-style: italic; }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 8px var(--blue); }
+    50%       { box-shadow: 0 0 20px var(--blue); }
+  }
+
+  .hero-eyebrow { animation: fadeUp 0.7s ease both 0.1s; }
+  h1            { animation: fadeUp 0.7s ease both 0.22s; }
+  .hero-sub     { animation: fadeUp 0.7s ease both 0.34s; }
+  .hero-desc    { animation: fadeUp 0.7s ease both 0.44s; }
+  .cta-row      { animation: fadeUp 0.7s ease both 0.54s; }
+  .hero-badge   { animation: glowPulse 4s ease-in-out infinite; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    nav { padding: 1.2rem 1.5rem; }
+    nav ul { gap: 1.2rem; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 8rem 2rem 4rem; }
+    .hero-right { height: 40vw; min-height: 220px; }
+    .about, .skills, .education, .contact { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 2rem; }
+    .career, .work, .interests { padding: 5rem 2rem; }
+    .work-grid, .interests-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+    .projects-row { grid-template-columns: 1fr; }
+    .timeline-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .timeline-meta { padding-left: 2rem; }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-mark"><span>DH</span> · Das Heilhaus</div>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#expertise">Expertise</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#career">Career</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Das Heilhaus · Canal Winchester, OH</div>
+      <h1>Evan<br><em>Heil</em></h1>
+      <p class="hero-sub">IT Leader · Systems Thinker · Technologist</p>
+      <p class="hero-desc">
+        Nineteen years building, managing, and evolving enterprise technology in demanding manufacturing environments — from the production floor to IT leadership. A practitioner who understands how systems serve operations, not just how they function in isolation.
+      </p>
+      <div class="cta-row">
+        <a href="#expertise" class="btn-primary">View My Work</a>
+        <a href="#contact" class="btn-ghost">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="bracket bracket-tl"></div>
+      <div class="bracket bracket-tr"></div>
+      <div class="bracket bracket-bl"></div>
+      <div class="bracket bracket-br"></div>
+      <div class="hero-monogram">H</div>
+      <div class="hero-badge">
+        <div class="hero-badge-init">EH</div>
+        <div class="hero-badge-label">Evan<br>Heil</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div>
+      <div class="section-label">About</div>
+      <h2>Built From<br>the <em>Ground Up</em></h2>
+    </div>
+    <div>
+      <div class="about-text">
+        <p>
+          My career in technology didn't start at a keyboard — it started on the production floor. That foundation shaped everything that followed: an instinct for how operations actually work, a skepticism of solutions that look good on paper but fail under pressure, and a commitment to technology that serves people, not the other way around.
+        </p>
+        <p>
+          Over nineteen years at TS Trim Industries, I progressed through four distinct roles — inventory control, IT coordination, systems management, and ultimately leading the Information Systems section as Section Manager. Each chapter added a different layer: operational discipline, technical depth, vendor management, team leadership, and strategic planning.
+        </p>
+        <p>
+          Outside of work, I build things. I design and operate layered IoT environments with an emphasis on local control, protocol interoperability, and reliability over convenience. I build my own PCs on a platform-longevity philosophy — decisions made at build time to maximize useful life, not win the current benchmark. And I'm genuinely interested in what comes next — the convergence of AI, reusable spaceflight, fusion energy, and quantum computing as a civilizational inflection point, not just a tech cycle.
+        </p>
+      </div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-num">19</div>
+          <div class="stat-label">Years at One Company</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Distinct Roles</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">$1.4M</div>
+          <div class="stat-label">Budget Managed</div>
+        </div>
+      </div>
+      <div class="projects-row">
+        <div class="project-card">
+          <div class="project-card-title">IoT Architecture</div>
+          <p>Designing and operating a layered IoT environment across mixed-protocol device ecosystems — local hub-based control, cloud-connected endpoints, and voice integration. Emphasis on reliability-first design: local processing where possible, minimal cloud dependency for core automations, and network architecture that isolates IoT traffic appropriately. Built to scale and adapt as the environment changes rather than locked to any single vendor's ecosystem.</p>
+        </div>
+        <div class="project-card">
+          <div class="project-card-title">PC Hardware</div>
+          <p>Building personal systems for years with a platform-longevity philosophy: decisions are made at build time to maximize the useful life of the platform, not to win the current benchmark. That means deliberate tradeoffs — prioritizing thermal headroom, upgrade path clarity, and component interoperability over raw specs. Incremental upgrades within a platform are a band-aid; full platform replacement on a considered schedule is the actual strategy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- EXPERTISE -->
+  <section class="work" id="expertise">
+    <div class="section-label">Expertise</div>
+    <h2>What I <em>Bring</em></h2>
+    <div class="work-grid">
+
+      <div class="work-card">
+        <div class="work-card-num">// 01</div>
+        <h3>Enterprise IT Leadership</h3>
+        <p>Managing teams, budgets, and vendor portfolios in 24/7 production environments. Four-person IS team, 12+ vendor relationships, and a ~$1.4M annual budget — with full accountability for uptime and service delivery.</p>
+        <div class="work-card-tags">
+          <span class="tag">Team Leadership</span>
+          <span class="tag">Budget Mgmt</span>
+          <span class="tag">Vendor Relations</span>
+        </div>
+      </div>
+
+      <div class="work-card">
+        <div class="work-card-num">// 02</div>
+        <h3>Systems Integration</h3>
+        <p>Primary support lead for MES and WMS platforms; coordinated IT integration for AGV and ASRS implementations alongside engineering and operations. Connecting systems across the production stack, not just maintaining them.</p>
+        <div class="work-card-tags">
+          <span class="tag">MES / WMS</span>
+          <span class="tag">AGV / ASRS</span>
+          <span class="tag">ERP</span>
+        </div>
+      </div>
+
+      <div class="work-card">
+        <div class="work-card-num">// 03</div>
+        <h3>Infrastructure & Security</h3>
+        <p>Windows Server, Active Directory, SCCM, Meraki networking, Citrix, and enterprise physical security — Milestone XProtect IP video and Lenel access control with full RFID credential lifecycle management.</p>
+        <div class="work-card-tags">
+          <span class="tag">Infrastructure</span>
+          <span class="tag">Physical Security</span>
+          <span class="tag">Endpoint Mgmt</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="skills" id="skills">
+    <div>
+      <div class="section-label">Technical Skills</div>
+      <h2>Tools &amp;<br><em>Platforms</em></h2>
+    </div>
+    <div class="skills-grid">
+
+      <div>
+        <div class="skill-group-title">Infrastructure</div>
+        <ul class="skill-list">
+          <li>Windows Server</li>
+          <li>Active Directory</li>
+          <li>SCCM</li>
+          <li>Hyper-V</li>
+          <li>Citrix</li>
+          <li>Meraki (Switches / APs)</li>
+          <li>VPN</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="skill-group-title">Enterprise Systems</div>
+        <ul class="skill-list">
+          <li>MES — Tutelar Ujigami</li>
+          <li>ERP — QAD / Glovia</li>
+          <li>WMS</li>
+          <li>AGV / ASRS Integration</li>
+          <li>Yodeck Digital Signage</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="skill-group-title">Security & Endpoint</div>
+        <ul class="skill-list">
+          <li>Milestone XProtect (IP Video)</li>
+          <li>Lenel Access Control</li>
+          <li>RFID Credential Management</li>
+          <li>SureMDM</li>
+          <li>Meraki MDM</li>
+          <li>Microsoft Intune</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="skill-group-title">Development</div>
+        <ul class="skill-list">
+          <li>SQL</li>
+          <li>Python</li>
+          <li>JavaScript</li>
+          <li>HTML / CSS</li>
+          <li>PHP</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="skill-group-title">Hardware</div>
+        <ul class="skill-list">
+          <li>Dell Enterprise (15+ years — servers, workstations, support lifecycle)</li>
+          <li>Zebra / DataLogic / CAB Label Systems</li>
+          <li>Cognex Vision Tools</li>
+          <li>AT&amp;T Corporate Device Mgmt</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="skill-group-title">Methods</div>
+        <ul class="skill-list">
+          <li>Root Cause Analysis / 5 Whys</li>
+          <li>Kaizen / Gemba</li>
+          <li>Lean / 5S</li>
+          <li>Project Coordination</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- CAREER TIMELINE -->
+  <section class="career" id="career">
+    <div class="section-label">Career</div>
+    <h2>One Company,<br><em>Four Chapters</em></h2>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <div class="timeline-period">Apr 2024 — Present</div>
+          <div class="timeline-company">TS Trim Industries, Inc.</div>
+        </div>
+        <div>
+          <div class="timeline-role">Section Manager — Information Systems</div>
+          <p class="timeline-desc">Lead a four-person IS team providing operational coverage across multiple production shifts. Manage a ~$1.4M annual IT budget and relationships with 12+ technology vendors. Administer enterprise physical security platforms including Milestone XProtect and Lenel access control. Develop annual and mid-term business plans, org structure recommendations, and semiannual budget forecasts.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <div class="timeline-period">Apr 2014 — Apr 2024</div>
+          <div class="timeline-company">TS Trim Industries, Inc.</div>
+        </div>
+        <div>
+          <div class="timeline-role">Assistant Section Manager — Information Systems</div>
+          <p class="timeline-desc">Managed a technician team supporting 24/7 production operations. Served as primary support lead for MES and WMS platforms; coordinated IT integration for AGV and ASRS implementations with engineering, operations, and vendors. Applied structured problem-solving to reduce downtime and improve system availability.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <div class="timeline-period">May 2010 — Apr 2014</div>
+          <div class="timeline-company">TS Trim Industries, Inc.</div>
+        </div>
+        <div>
+          <div class="timeline-role">Coordinator / Team Leader / Technician — Information Systems</div>
+          <p class="timeline-desc">Progressed through technical and coordination roles supporting ERP (QAD, Glovia), MES (Tutelar Ujigami), and WMS deployments. Contributed to system design, testing, and user adoption initiatives across the enterprise.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <div class="timeline-period">Dec 2005 — May 2010</div>
+          <div class="timeline-company">TS Trim Industries, Inc.</div>
+        </div>
+        <div>
+          <div class="timeline-role">Administrator / Team Lead — Production Inventory Control</div>
+          <p class="timeline-desc">Led inventory control operations for multiple Honda production lines. Applied Lean, Gemba, and 5S principles to reduce waste and improve supply chain accuracy. This operational foundation directly shaped the systems-first perspective carried into every IT role that followed.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- EDUCATION & CERTS -->
+  <section class="education" id="education">
+    <div>
+      <div class="section-label">Education</div>
+      <h2>Credentials &amp;<br><em>Certifications</em></h2>
+    </div>
+    <div class="edu-grid">
+
+      <div class="edu-card">
+        <div class="edu-card-type">Degree</div>
+        <div class="edu-card-title">B.S. Interactive Media Design</div>
+        <div class="edu-card-detail">Franklin University · Columbus, OH · Conferred September 2024</div>
+        <a href="https://www.credly.com/users/evanheil" target="_blank" rel="noopener" class="edu-card-link">Dean's List · GPA 3.7 · View Badges ↗</a>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-card-type">Google IT Support Professional Certificate</div>
+        <div class="edu-card-title">Technical Support Fundamentals</div>
+        <div class="edu-card-detail">Authorized by Google · Coursera · February 2026</div>
+        <div class="cert-courses">
+          <div class="cert-course">
+            <span class="cert-course-name">Technical Support Fundamentals · Feb 5, 2026</span>
+            <a href="https://coursera.org/verify/YPOSOS8QCF6F" target="_blank" rel="noopener" class="cert-course-verify">Verify ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-card-type">Google Project Management Professional Certificate</div>
+        <div class="edu-card-title">Foundations, Initiation &amp; Planning</div>
+        <div class="edu-card-detail">Authorized by Google · Coursera · Feb–Mar 2026</div>
+        <div class="cert-courses">
+          <div class="cert-course">
+            <span class="cert-course-name">Foundations of Project Management · Feb 11, 2026</span>
+            <a href="https://coursera.org/verify/KHADN2V4UFDD" target="_blank" rel="noopener" class="cert-course-verify">Verify ↗</a>
+          </div>
+          <div class="cert-course">
+            <span class="cert-course-name">Project Initiation: Starting a Successful Project · Feb 12, 2026</span>
+            <a href="https://coursera.org/verify/8UMWGK5WYB8E" target="_blank" rel="noopener" class="cert-course-verify">Verify ↗</a>
+          </div>
+          <div class="cert-course">
+            <span class="cert-course-name">Project Planning: Putting It All Together · Mar 3, 2026</span>
+            <a href="https://coursera.org/verify/0LTEC0KH3W8M" target="_blank" rel="noopener" class="cert-course-verify">Verify ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERESTS -->
+  <section class="interests" id="interests">
+    <div class="section-label">Beyond Work</div>
+    <h2>What I'm <em>Thinking About</em></h2>
+    <div class="interests-grid">
+
+      <div class="interest-item">
+        <h4>Civilizational Technology</h4>
+        <p>The convergence of reusable spaceflight, fusion energy, generative AI, and quantum computing isn't just a product cycle — it's a Kardashev-scale inflection point. I follow these trajectories closely, including the economics of asteroid mining and the governance questions that come with space resource extraction.</p>
+      </div>
+
+      <div class="interest-item">
+        <h4>IoT & Systems Design</h4>
+        <p>Building and iterating on connected systems is a genuine hobby, not just a professional extension. There's a distinct satisfaction in designing infrastructure that actually disappears into the background — reliable enough that you stop noticing it.</p>
+      </div>
+
+      <div class="interest-item">
+        <h4>Endurance Running</h4>
+        <p>Running at least three days a week on a structured plan building toward quarter-marathon distance. The same instinct that goes into systems design — build a reliable foundation, iterate deliberately, track your metrics — applies surprisingly well to long-distance training.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div>
+      <div class="section-label">Contact</div>
+      <h2>Let's<br><em>Connect</em></h2>
+    </div>
+    <div>
+      <div class="contact-text">
+        <p>Available for conversations about IT leadership, systems integration, and technology strategy roles. Based in Canal Winchester, Ohio — open to remote and hybrid opportunities.</p>
+      </div>
+      <div class="contact-details">
+        <div>
+          <div class="contact-item-label">Email</div>
+          <div class="contact-item-value"><a href="/cdn-cgi/l/email-protection#690c1f080747010c0005290d081a44010c000501081c1a470a0604"><span class="__cf_email__" data-cfemail="e48192858aca8c818d88a4808597c98c818d888c859197ca878b89">[email&#160;protected]</span></a></div>
+        </div>
+        <div>
+          <div class="contact-item-label">Location</div>
+          <div class="contact-item-value">Canal Winchester, OH · Open to Remote / Hybrid</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="fo

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Work — Das Heilhaus</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void:    #07090d;
+    --base:    #0a0c10;
+    --surface: #0f1318;
+    --panel:   #141820;
+    --raise:   #1a202c;
+
+    --blue:        #4a7fa5;
+    --blue-bright: #6ba3cc;
+    --blue-dim:    #2d5570;
+    --blue-glow:   rgba(74,127,165,0.15);
+
+    --gold:        #c9a84c;
+    --gold-bright: #e2c270;
+    --gold-dim:    #8a6e30;
+    --gold-glow:   rgba(201,168,76,0.12);
+
+    --silver:  #8a9bb0;
+    --muted:   #6a7a8f;
+    --ghost:   #2a3040;
+
+    --text:    #e8edf2;
+    --text-2:  #aabccc;
+    --text-3:  #7a8fa3;
+
+    --line:        rgba(74,127,165,0.12);
+    --line-bright: rgba(74,127,165,0.25);
+
+    --aptos: 'Aptos', 'Aptos Display', Calibri, 'Gill Sans', 'Gill Sans MT', system-ui, sans-serif;
+    --mono:  'Aptos Mono', 'Cascadia Mono', Consolas, monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--base);
+    color: var(--text);
+    font-family: var(--aptos);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-mark {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .nav-mark span { color: var(--gold); }
+
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--blue-bright); }
+  nav a.active { color: var(--gold); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 10rem 6rem 5rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(74,127,165,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .page-header-inner {
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background: var(--blue);
+    box-shadow: 0 0 6px var(--blue);
+  }
+
+  h1 {
+    font-family: var(--aptos);
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 200;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold);
+  }
+
+  .page-header p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--text-2);
+    max-width: 60ch;
+    font-weight: 400;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    margin-bottom: 3rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--blue-bright); }
+
+  .back-link::before {
+    content: '←';
+    font-size: 0.8rem;
+  }
+
+  /* ── SHARED SECTION STYLES ── */
+  .work-section {
+    padding: 6rem 6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .work-section:last-of-type { border-bottom: none; }
+
+  .section-header {
+    margin-bottom: 4rem;
+  }
+
+  .section-number {
+    font-family: var(--mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-number::before {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background: var(--blue);
+    box-shadow: 0 0 6px var(--blue);
+  }
+
+  h2 {
+    font-family: var(--aptos);
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+
+  h2 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .section-desc {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text-3);
+    max-width: 65ch;
+    font-weight: 400;
+  }
+
+  /* ── VIDEO SECTION ── */
+  .sd-brand {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    padding: 2rem 2.5rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sd-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 100% at 0% 50%, var(--gold-glow), transparent 70%);
+    pointer-events: none;
+  }
+
+  .sd-brand-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sd-brand-label {
+    font-family: var(--mono);
+    font-size: 0.54rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+
+  .sd-brand-name {
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  .sd-brand-name em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .sd-brand-sub {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    color: var(--text-3);
+    margin-top: 0.3rem;
+  }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .video-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+
+  .video-card:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-2px);
+  }
+
+  .video-thumb {
+    aspect-ratio: 16/9;
+    background: var(--panel);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-thumb iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: absolute;
+    inset: 0;
+  }
+
+  .video-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel);
+    position: relative;
+  }
+
+  .play-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 1px solid var(--blue-dim);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    font-size: 1.2rem;
+    transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+
+  .video-card:hover .play-icon {
+    border-color: var(--blue);
+    color: var(--blue-bright);
+    box-shadow: 0 0 20px var(--blue-glow);
+  }
+
+  .video-info {
+    padding: 1.5rem;
+  }
+
+  .video-tag {
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .video-title {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .video-desc {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-3);
+  }
+
+  .video-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .video-link:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold);
+  }
+
+  /* ── STREAMER CLIENT SECTION ── */
+  .client-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .client-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .client-card:hover { border-color: var(--line-bright); }
+
+  .client-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--blue-dim), transparent);
+  }
+
+  .client-name {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .client-title {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+
+  .client-desc {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: var(--text-3);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Badge display */
+  .badge-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .badge-item img {
+    width: 48px;
+    height: 48px;
+    image-rendering: crisp-edges;
+    border: 1px solid var(--ghost);
+    background: var(--panel);
+  }
+
+  .badge-tier {
+    font-family: var(--mono);
+    font-size: 0.46rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .client-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .client-tag {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    border: 1px solid var(--ghost);
+    padding: 0.3rem 0.7rem;
+  }
+
+  /* Tobbehs overlay preview */
+  .overlay-preview {
+    background: var(--panel);
+    border: 1px solid var(--ghost);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .overlay-preview img {
+    width: 100%;
+    display: block;
+    opacity: 0.9;
+  }
+
+  .overlay-note {
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--ghost);
+    background: var(--surface);
+  }
+
+  /* ── COMPOSITING SECTION ── */
+  .compositing-hero {
+    margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    padding: 3rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .compositing-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 0% 50%, var(--gold-glow), transparent 60%);
+    pointer-events: none;
+  }
+
+  .compositing-hero-img {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .compositing-hero-img img {
+    max-height: 280px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 30px rgba(74,127,165,0.2));
+  }
+
+  .compositing-hero-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge-label {
+    font-family: var(--mono);
+    font-size: 0.54rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+
+  .compositing-hero-text h3 {
+    font-size: 1.6rem;
+    font-weight: 200;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .compositing-hero-text h3 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .compositing-hero-text p {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--text-3);
+    font-weight: 400;
+  }
+
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+
+  .comp-card:hover {
+    border-color: var(--blue-dim);
+    transform: translateY(-3px);
+  }
+
+  .comp-img-wrap {
+    aspect-ratio: 9/16;
+    overflow: hidden;
+    background: var(--panel);
+    position: relative;
+  }
+
+  .comp-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .comp-card:hover .comp-img-wrap img {
+    transform: scale(1.04);
+  }
+
+  .comp-caption {
+    padding: 1rem 1.2rem;
+  }
+
+  .comp-caption-title {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .comp-caption-sub {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* corner brackets on comp cards */
+  .comp-card::before,
+  .comp-card::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    border-color: var(--blue-dim);
+    border-style: solid;
+    z-index: 2;
+    transition: border-color 0.25s;
+  }
+
+  .comp-card::before {
+    top: 6px; left: 6px;
+    border-width: 1px 0 0 1px;
+  }
+
+  .comp-card::after {
+    bottom: 6px; right: 6px;
+    border-width: 0 1px 1px 0;
+  }
+
+  .comp-card:hover::before,
+  .comp-card:hover::after {
+    border-color: var(--blue);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 2.5rem 6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--void);
+  }
+
+  .footer-mark {
+    font-family: var(--aptos);
+    font-size: 1.2rem;
+    font-weight: 200;
+    letter-spacing: 0.04em;
+    color: var(--text-2);
+  }
+
+  .footer-mark span { color: var(--gold); font-style: italic; }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header-inner { animation: fadeUp 0.7s ease both 0.1s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    nav { padding: 1.2rem 1.5rem; }
+    nav ul { gap: 1.2rem; }
+    .page-header { padding: 8rem 2rem 4rem; }
+    .work-section { padding: 4rem 2rem; }
+    .video-grid { grid-template-columns: 1fr; }
+    .client-grid { grid-template-columns: 1fr; }
+    .comp-grid { grid-template-columns: repeat(2, 1fr); }
+    .compositing-hero { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-mark"><span>DH</span> · Das Heilhaus</div>
+    <ul>
+      <li><a href="/">About</a></li>
+      <li><a href="/#expertise">Expertise</a></li>
+      <li><a href="/#skills">Skills</a></li>
+      <li><a href="/#career">Career</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#contact">Contact</a></li>
+      <li><a href="/work.html" class="active">Work</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="back-link">Back to Das Heilhaus</a>
+      <div class="section-label">Creative &amp; Production</div>
+      <h1>The <em>Work</em></h1>
+      <p>A collection of video production, streamer client work, and digital compositing — built across academic, client, and personal contexts. Produced under the SilencedDuality Production, ETH Customs, and Team DART brands.</p>
+    </div>
+  </header>
+
+  <!-- SECTION 01: VIDEO PRODUCTION -->
+  <section class="work-section">
+    <div class="section-header">
+      <div class="section-number">// 01</div>
+      <h2>Video <em>Production</em></h2>
+      <p class="section-desc">Motion graphics, kinetic typography, and narrative editing — produced under the SilencedDuality Production brand. Academic work completed for the B.S. Interactive Media Design program at Franklin University; client work produced for streaming content creators.</p>
+    </div>
+
+    <!-- SilencedDuality brand callout -->
+    <div class="sd-brand">
+      <div class="sd-brand-text">
+        <div class="sd-brand-label">Production Brand</div>
+        <div class="sd-brand-name">Silenced<em>Duality</em> Production</div>
+        <div class="sd-brand-sub">Brand ident appearing on all video work · Academic &amp; Client Productions</div>
+      </div>
+    </div>
+
+    <div class="video-grid">
+
+      <div class="video-card">
+        <div class="video-thumb">
+          <iframe
+            src="https://www.youtube.com/embed/ZiWu6kXP-M8"
+            title="Broadcast Motion Graphics — Franklin University"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Academic · Broadcast Motion Graphics · Franklin University</div>
+          <div class="video-title">Breaking News Sting — VR Segment</div>
+          <p class="video-desc">A broadcast-style news intro sting transitioning to an anchor segment covering a fictional VR product story. Includes original voiceover recording, music selection, and motion graphics composition.</p>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb">
+          <iframe
+            src="https://www.youtube.com/embed/qyW7eHdqd6A"
+            title="Kinetic Typography — Franklin University"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Academic · Kinetic Typography · Franklin University</div>
+          <div class="video-title">Type in Motion — Countryside</div>
+          <p class="video-desc">A cinematic type-in-motion piece using a sweeping countryside pan as the canvas. Folk-style score with movie intro typography treatment — text synchronized to music and camera movement.</p>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb">
+          <iframe
+            src="https://www.youtube.com/embed/_4yrW90_RNA"
+            title="Stream Starting Soon — Vallee_TTV"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Client Work · Stream Overlay · OBS Motion Graphics</div>
+          <div class="video-title">Stream Starting Soon — Vallee_TTV</div>
+          <p class="video-desc">Animated stream intro loop produced for a Canadian Twitch streamer. Blue flame composite on a maple leaf mark with a looping text transition between "Starting" and "Soon." Delivered as a WEBM for OBS integration.</p>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb">
+          <iframe
+            src="https://www.youtube.com/embed/3PHdlmz-mVE"
+            title="Escape from Tarkov — Streamer Montage"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Client Work · Video Production · Rhythmic Editing</div>
+          <div class="video-title">Escape from Tarkov — Streamer Montage</div>
+          <p class="video-desc">A three-act edited montage for a gaming streamer. Opens with a SilencedDuality Production sting, builds through rock-scored gameplay clips with rhythm-matched cuts at the musical drop, and closes on a single comedic clip fading out on the streamer's laughter.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 02: STREAMER CLIENT WORK -->
+  <section class="work-section">
+    <div class="section-header">
+      <div class="section-number">// 02</div>
+      <h2>Streamer <em>Client Work</em></h2>
+      <p class="section-desc">Brand identity, animated overlays, and visual systems designed for Twitch content creators. Each engagement involved interpreting a streamer's identity into a deployable asset kit for live broadcast use.</p>
+    </div>
+
+    <div class="client-grid">
+
+      <!-- Vallee_TTV -->
+      <div class="client-card">
+        <div class="client-name">Vallee_TTV</div>
+        <div class="client-title">Brand Identity &amp; Subscription Badge System</div>
+        <p class="client-desc">Full brand engagement including logo design, OBS stream elements, and a five-tier subscription badge system. The badge system uses a single maple leaf mark — a nod to the streamer's Canadian identity — color-coded across subscription tiers with a consistent medal ribbon device.</p>
+        <div class="badge-row">
+          <div class="badge-item">
+            <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/badges/72x72_Vallee_Sub_Badge_BLUE.png" alt="Blue tier badge" onerror="this.style.background='#1a202c';this.style.width='48px';this.style.height='48px'">
+            <span class="badge-tier">Tier 1</span>
+          </div>
+          <div class="badge-item">
+            <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/badges/72x72_Vallee_Sub_Badge_SILVER.png" alt="Silver tier badge" onerror="this.style.background='#1a202c';this.style.width='48px';this.style.height='48px'">
+            <span class="badge-tier">Tier 2</span>
+          </div>
+          <div class="badge-item">
+            <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/badges/72x72_Vallee_Sub_Badge_GOLD.png" alt="Gold tier badge" onerror="this.style.background='#1a202c';this.style.width='48px';this.style.height='48px'">
+            <span class="badge-tier">Tier 3</span>
+          </div>
+          <div class="badge-item">
+            <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/badges/72x72_Vallee_Sub_Badge_RED.png" alt="Red tier badge" onerror="this.style.background='#1a202c';this.style.width='48px';this.style.height='48px'">
+            <span class="badge-tier">Tier 4</span>
+          </div>
+          <div class="badge-item">
+            <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/badges/72x72_Vallee_Sub_Badge_PURPLE.png" alt="Purple tier badge" onerror="this.style.background='#1a202c';this.style.width='48px';this.style.height='48px'">
+            <span class="badge-tier">Prestige</span>
+          </div>
+        </div>
+        <div class="client-tags">
+          <span class="client-tag">Logo Design</span>
+          <span class="client-tag">OBS Elements</span>
+          <span class="client-tag">Badge System</span>
+          <span class="client-tag">Icon Design</span>
+        </div>
+      </div>
+
+      <!-- Tobbehs -->
+      <div class="client-card">
+        <div class="client-name">Tobbehs</div>
+        <div class="client-title">Full Streamer Kit — Notifications &amp; Overlays</div>
+        <p class="client-desc">End-to-end streamer brand kit including logo, OBS stream scene elements, and animated notification overlays. The notification system uses a parallelogram banner format with a starred icon panel, neon glow borders, and animated lightning coursing the perimeter — delivered as looping WEBMs for live OBS integration.</p>
+        <div class="overlay-preview">
+          <video
+            src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/tobbehs/tobbehs_notification.webm"
+            autoplay loop muted playsinline
+            style="width:100%;display:block;"
+            onerror="this.parentElement.style.display='none'">
+          </video>
+          <div class="overlay-note">Notification overlay · Animated WEBM · Lightning courses the perimeter on loop</div>
+        </div>
+        <div class="client-tags">
+          <span class="client-tag">Logo Design</span>
+          <span class="client-tag">OBS Elements</span>
+          <span class="client-tag">Animated Overlays</span>
+          <span class="client-tag">Motion Graphics</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 03: DIGITAL COMPOSITING -->
+  <section class="work-section">
+    <div class="section-header">
+      <div class="section-number">// 03</div>
+      <h2>Digital <em>Compositing</em></h2>
+      <p class="section-desc">Photo compositing and digital illustration work produced under the ETH Customs and Team DART brands for the Android customization community. Distributed as device wallpapers and community assets.</p>
+    </div>
+
+    <!-- ETH Customs hero -->
+    <div class="compositing-hero">
+      <div class="compositing-hero-img">
+        <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/compositing/eth_customs.jpg" alt="ETH Customs — Team DART brand mark" onerror="this.style.display='none'">
+      </div>
+      <div class="compositing-hero-text">
+        <div class="hero-badge-label">Brand Origin · Creative Identity</div>
+        <h3>ETH Customs<br><em>Team DART</em></h3>
+        <p>Design alias and collaborative brand developed for the Android customization community. ETH Customs preceded a merger with fellow artists to form Team DART (Digital ART) — producing compositing, typography, and UI work distributed across the community. Later work produced under the SilencedDuality alias.</p>
+      </div>
+    </div>
+
+    <!-- Four compositing pieces -->
+    <div class="comp-grid">
+
+      <div class="comp-card">
+        <div class="comp-img-wrap">
+          <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/compositing/LSU.jpg" alt="LSU — Tiger eyes composited through letterforms">
+        </div>
+        <div class="comp-caption">
+          <div class="comp-caption-title">LSU Tigers</div>
+          <div class="comp-caption-sub">Photo masking · Type compositing</div>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-img-wrap">
+          <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/compositing/selective_blue_eyes.jpg" alt="Selective color — blue eyes isolation">
+        </div>
+        <div class="comp-caption">
+          <div class="comp-caption-title">Selective Color</div>
+          <div class="comp-caption-sub">Color isolation · Masking</div>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-img-wrap">
+          <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/compositing/PBR.jpg" alt="PBR — desaturated action composite">
+        </div>
+        <div class="comp-caption">
+          <div class="comp-caption-title">PBR — Bull Riders</div>
+          <div class="comp-caption-sub">Desaturation · Logo compositing</div>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-img-wrap">
+          <img src="https://raw.githubusercontent.com/IronTangent/das-heilhaus.com/main/assets/work/compositing/mercedes.jpg" alt="Mercedes — emblem render and atmospheric composite">
+        </div>
+        <div class="comp-caption">
+          <div class="comp-caption-title">Mercedes-Benz</div>
+          <div class="comp-caption-sub">Light rendering · Atmospheric composite</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-mark">Das <span>Heilhaus</span></div>
+    <div class="footer-copy">© 2026 Evan Heil · Canal Winchester, OH</div>
+  </footer>
+
+</body>
+</html>
